@@ -1,0 +1,11 @@
+[style]
+based_on_style = pep8
+column_limit = 105
+allow_split_before_dict_value = false
+dedent_closing_brackets = true
+coalesce_brackets = false
+each_dict_entry_on_separate_line = true
+join_multiple_lines = true
+split_before_dot = false
+split_before_expression_after_opening_paren = false
+

@@ -4,8 +4,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pynvim = "*"
+scotty = {path="./../scotty"}
+pylint = "*"
+mypy = "*"
+pydocstyle = "*"
 
 [packages]
+pairity-schema = {path="./../schema/gen/python"}
+pairity-utils = {path="./../python_utils"}
 
 [requires]
 python_version = "3.7"
