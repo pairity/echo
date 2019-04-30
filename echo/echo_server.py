@@ -5,9 +5,12 @@ from pairity.utils.grpc_server import serve
 
 import grpc
 
+from echo.verify_jwt import require_jwt
+
 class EchoAPIServicer(echo_grpc.EchoAPIServicer):
     """Just echo requests."""
 
+    @require_jwt
     def Echo(self, request: echo_api.EchoRequest, context: grpc.RpcContext) -> echo_api.EchoResponse:
         """gRPC linkage for Echo.
 

@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  echo:
+    build:
+      context: .
+      args:
+        FURY_AUTH: "${FURY_AUTH}"
+    ports:
+      - 50052:50052
+    env_file:
+      - .env
+  echo-grpcui:
+    image: registry.gitlab.com/pairity/docker-general/grpcui:2019.4.30.dev18420
+    ports:
+      - 60552:60552
+    depends_on:
+      - echo
+    env_file:
+      - .env
+    command: ["sh", "/launch.sh", "60552", "echo:50052"]
+
+networks:
+  default:
+    external:
+      name: daria

@@ -3,15 +3,26 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[[source]]
+name = "pairity"
+url = "https://${FURY_AUTH}@repo.pairity.io/pypi"
+verify_ssl = true
+
 [dev-packages]
 pynvim = "*"
 pylint = "*"
 mypy = "*"
 pydocstyle = "*"
+ipython = "*"
 
 [packages]
-pairity-schema = {path="./../schema/gen/python"}
-pairity-utils = {path="./../python_utils"}
+pairity-schema = "*"
+pairity-utils = "*"
+requests = "*"
+jwcrypto = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

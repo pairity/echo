@@ -6,23 +6,7 @@
             "service_proto": "pairity.echo.v1.echo_api"
         }
     ],
+    "port": "50052",
     "server_mode": "secure",
-    "server_name": "echo",
-    "docker": [
-        {
-            "image": "registry.gitlab.com/pairity/docker-general/grpcui",
-            "name": "echo-server-grpcui",
-            "after": true,
-            "ports": {
-                "60551/tcp": 60551
-            },
-            "environment": {
-                "grpc_host": "{{ lan_ip }}"
-            },
-            "shell": [
-                "open",
-                "http://localhost:60551"
-            ]
-        }
-    ]
+    "server_name": "echo"
 }
