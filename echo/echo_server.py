@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
 class EchoAPIServicer(echo_grpc.EchoAPIServicer):
     """Just echo requests."""
-    VERIFIER = JwtVerifier(config.cognito_config_user_pool_id, config.aws_config_region)
+    VERIFIER = JwtVerifier(config.cognito.user_pool_id, config.aws.region)
 
 
     @VERIFIER.require_jwt
