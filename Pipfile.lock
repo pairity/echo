@@ -302,10 +302,10 @@
         },
         "pairity-utils": {
             "hashes": [
-                "sha256:92358830f33d241e7e849b9cf6dd8240d0e226849edc13051fb2d362a4db8340"
+                "sha256:9d9f392441bc604af2e22ac357e7802bf019c3471e08c7bee845019a82234436"
             ],
             "index": "pypi",
-            "version": "==2019.5.1.dev61098"
+            "version": "==2019.5.2.dev60990"
         },
         "protobuf": {
             "hashes": [
@@ -368,6 +368,13 @@
                 "sha256:fcb9ae8aa9158106c5d98a4349ec0d90b68f052d620b2d24622ba03b91e4d81d"
             ],
             "version": "==3.8.0"
+        },
+        "python-consul": {
+            "hashes": [
+                "sha256:168f1fa53948047effe4f14d53fc1dab50192e2a2cf7855703f126f469ea11f4",
+                "sha256:eeaaeeae87807ad1bc0d476ca3a9c53823ed5d514832951acebeca671eb54b20"
+            ],
+            "version": "==1.1.0"
         },
         "requests": {
             "hashes": [
