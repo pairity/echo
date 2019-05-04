@@ -11,6 +11,10 @@
         "values": [
             "aws/config/region",
             "cognito/config/user_pool_id"
+        ],
+        "vault_uri": "http://localhost:8200",
+        "secrets": [
+            "cognito/config/client_secret"
         ]
     },
     "port": "50052",

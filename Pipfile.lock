@@ -153,10 +153,10 @@
         },
         "pairity-schema": {
             "hashes": [
-                "sha256:9d725badf9b7e2384fab618374ac32929277513b902a8f4e5efc9ffb873cacbb"
+                "sha256:b69d8be3efd8d1bd9040110840bbe2912c798e0933de2220ec56dd2051fcc7b2"
             ],
             "index": "pypi",
-            "version": "==2019.5.1.dev6988"
+            "version": "==2019.5.1.dev59669"
         },
         "pairity-utils": {
             "path": "./../python_utils"
