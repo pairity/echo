@@ -6,18 +6,6 @@
             "service_proto": "pairity.echo.v1.echo_api"
         }
     ],
-    "config": {
-        "consul_uri": "localhost:8500",
-        "values": [
-            "aws/config/region",
-            "cognito/config/user_pool_id"
-        ],
-        "vault_uri": "http://localhost:8200",
-        "secrets": [
-            "cognito/config/client_secret"
-        ]
-    },
-    "port": "50052",
-    "server_mode": "secure",
-    "server_name": "echo"
+    "server_name": "echo",
+    "port": "50055"
 }

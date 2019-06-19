@@ -17,7 +17,8 @@ ipython = "*"
 
 [packages]
 pairity-schema = "*"
-pairity-utils = {path="./../python_utils"}
+pairity-utils = "*"
+pairity-validation = "*"
 requests = "*"
 jwcrypto = "*"
 
