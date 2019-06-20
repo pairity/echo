@@ -86,7 +86,8 @@ def main():
     with _reserve_port() as port:
         bind_address = '127.0.0.1:{}'.format(port)
         logger.info("Binding to '%s'", bind_address)
-        if len(sys.argv) > 1 and sys.argv[1] == '--single':
+        logger.info(sys.argv)
+        if len(sys.argv) > 4 and sys.argv[4] == '--single':
             _run_server(bind_address, 0)
         else:
             workers = []

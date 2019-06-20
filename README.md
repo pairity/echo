@@ -1,10 +1,13 @@
 # Pairity Echo
 
-This is a service that simple echo's the contents of your request. Just use it to test and muck about with the Pairity GRCP server interface.
+This is no an expermental server, the start of Contrail.
 
-This project includes both an example of standing up a secure server, as well as connect to a secure server. In order to run this service, you must do two things:
+To build the image: `docker build . -t echo --build-arg FURY_AUTH=$FURY_AUTH`
+To run the image: `docker run --name echo-service --rm echo python -m src.server`
+TO run the image with a single process: `docker run --name echo-service --rm echo python -m src.server --single`
 
-1. Stand up a [Vault-Consul backend](https://gitlab.com/pairity/docker-general/tree/vault-consul/vault-consul) to supply certificates
-2. You need to add the following line to `/etc/hosts` (I know...): `127.0.0.1   echo` 
+I have not been able to connect to this from outside of the docker container. My assumption is some socket weirdness because we are reliant on `SO_REUSEPORT` which I haven't been able to
+successfully set that option on MacOS. Any thoughts are welcome.
 
-Once these steps are complete, you can start the server and run the client
+There is an included client that will use 9 workers to make 10,000 requests each to the server and record how long each process takes and how long the whole process takes. 
+To run the client: `docker exec -it echo-service python client.py`
