@@ -2,10 +2,10 @@
     "services": [
         {
             "service_name": "EchoAPI",
-            "service_mod": "echo.echo_server",
             "service_proto": "pairity.echo.v1.echo_api"
         }
     ],
-    "server_name": "echo",
-    "port": "50055"
+    "server_name": "echo-service",
+    "server_mode": "insecure",
+    "port": "50050"
 }
