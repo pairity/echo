@@ -1,0 +1,172 @@
+.job_template: &job_def
+  image: $CI_REGISTRY_IMAGE/env:latest
+
+stages:
+- env
+- test
+- documentation
+- build
+- deploy
+
+test:lint:
+  <<: *job_def
+  stage: test
+  script:
+  - pylint src/
+
+test:security:
+  <<: *job_def
+  stage: test
+  script:
+  - |
+    export SAFETY_IGNORE=$(sh -c '
+      if [ ! -f ".vulnignore" ]; then
+        echo "";
+      else
+        IGNORE=""
+        while read line;
+        do
+          IGNORE="$IGNORE -i $line"
+        done < ".vulnignore";
+        echo $IGNORE
+      fi
+    ')
+  - pip install safety bandit
+  - pip freeze > reqs
+  - safety check -r reqs $SAFETY_IGNORE --full-report --output vuln.txt
+  - bandit -r src/
+  artifacts:
+    paths:
+    - vuln.txt
+    expire_in: 1 week
+    when: always
+
+test:unittests:
+  <<: *job_def
+  stage: test
+  services:
+  - docker:dind
+  variables:
+    ENV_IGNORE_ERRORS: "yes"
+  script:
+  - pytest test/
+
+test:codestyle:
+  <<: *job_def
+  stage: test
+  script:
+  - pycodestyle src/
+
+documentation:uml:
+  <<: *job_def
+  stage: documentation
+  script:
+  - pyreverse src/
+  artifacts:
+    paths:
+    - classes.dot
+    - packages.dot
+
+documentation:versions:
+  <<: *job_def
+  stage: documentation
+  script:
+  - pipenv install --dev
+  - pipenv graph > versions.txt
+  artifacts:
+    paths:
+    - versions.txt
+
+env:image:
+  image: docker:stable
+  stage: env
+  services:
+  - docker:dind
+  variables:
+    WORK_DIR: /$CI_PROJECT_NAME
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+  only:
+    changes:
+    - Pipfile.lock
+    - Pipfile
+    - Dockerfile
+  before_script:
+  - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+  - apk add --update --no-cache curl
+  script:
+  - curl --silent --fail --retry 3 https://vxv.pairity.io > VERSION
+  - docker build -f Dockerfile --build-arg WORK_DIR=/app --build-arg FURY_AUTH=$FURY_AUTH -t env --target env ./
+  - docker tag env $CI_REGISTRY_IMAGE/env:$(cat VERSION)
+  - docker push $CI_REGISTRY_IMAGE/env:$(cat VERSION)
+  - docker tag env $CI_REGISTRY_IMAGE/env:latest
+  - docker push $CI_REGISTRY_IMAGE/env:latest
+
+##########################
+### K8S related stages ###
+##########################
+variables:
+  KUBECONFIG: /etc/deploy/config
+
+.build_template: &job_build
+  only:
+    refs:
+    - master
+  image: registry.gitlab.com/pairity/ci-cd:latest
+  services:
+  - docker:dind
+  artifacts:
+    when: always
+    paths:
+    - build.out
+    - build.log
+  script:
+  - export VERSION=${CI_COMMIT_SHORT_SHA}
+  - $(aws ecr get-login --no-include-email --region us-east-2)
+  - skaffold build --quiet > build.out
+  dependencies:
+  - test:lint
+
+.deploy_template: &job_deploy
+  only:
+    refs:
+    - master
+  image: registry.gitlab.com/pairity/ci-cd:latest
+  script:
+  - mkdir -p /etc/deploy && echo ${K8S_CLUSTER_CONFIG} | base64 -d > ${KUBECONFIG}
+  - helm init --client-only
+  - helm plugin install https://github.com/hypnoglow/helm-s3.git
+  - helm repo add pairity $HELM_CHARTS_BUCKET_NAME
+  - helm dependency update helm-charts/$CI_PROJECT_NAME-service
+  - skaffold deploy --build-artifacts build.out
+  - rm ${KUBECONFIG}
+  dependencies:
+  - build
+
+build:
+  <<: *job_build
+  stage: build
+  before_script:
+  - export AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}
+  - export AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}
+
+development:
+  <<: *job_deploy
+  stage: deploy
+  environment:
+    name: development
+  before_script:
+  - export AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}
+  - export AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}
+  - export K8S_CLUSTER_CONFIG=${DEV_K8S_CLUSTER_CONFIG}
+
+#staging:
+  #<<: *job_deploy
+  #stage: deploy
+  #when: manual
+  #environment:
+    #name: staging
+  #before_script:
+    #- export AWS_ACCESS_KEY_ID=${STAGE_AWS_ACCESS_KEY_ID}
+    #- export AWS_SECRET_ACCESS_KEY=${STAGE_AWS_SECRET_ACCESS_KEY}
+    #- export K8S_CLUSTER_CONFIG=${STAGE_K8S_CLUSTER_CONFIG}
